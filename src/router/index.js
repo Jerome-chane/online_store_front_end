@@ -4,6 +4,8 @@ import Home from "../components/Home.vue";
 import Cart from "../components/Cart.vue";
 import ProductDetail from "../components/ProductDetail.vue";
 import AddProduct from "../components/AddProduct.vue";
+import EditProduct from "../components/EditProduct.vue";
+import MyProducts from "../components/MyProducts.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -27,6 +29,17 @@ const routes = [
     path: "/add",
     name: "Add",
     component: AddProduct
+  },
+  {
+    path: "/edit/product/:product_id",
+    name: "Edit",
+    component: EditProduct,
+    props: true
+  },
+  {
+    path: "/my-products",
+    name: "My Products",
+    component: MyProducts
   },
   {
     path: "/about",

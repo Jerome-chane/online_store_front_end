@@ -1,24 +1,39 @@
 <template>
   <div>
-    <Login></Login>
-    <div class="logos">
-      <!-- v-if="user && user.role == 'seller'" -->
-      <img class="add" @click="goToAdd" src="../assets/add-product.png" />
-      <img class="cart" @click="goToCart" src="../assets/cart.png" />
+    <NavBar></NavBar>
+    <LoginForm></LoginForm>
+    <br />
+    <br />
+
+    <div class="container">
+      <div class="logos">
+        <img
+          v-if="user && user.role == 'seller'"
+          class="add"
+          @click="goToAdd"
+          src="../assets/add-product.png"
+        />
+        <img class="cart" @click="goToCart" src="../assets/cart.png" />
+      </div>
+      <br />
+      <br />
+      <br />
+      <products></products>
     </div>
-    <products></products>
   </div>
 </template>
 
 <script>
 import Login from "./Login";
 import Products from "../components/Products";
+import LoginForm from "../components/LoginForm";
+import NavBar from "../components/NavBar";
 import { mapGetters } from "vuex";
 export default {
   data() {
     return {};
   },
-  components: { Login, Products },
+  components: { Login, Products, NavBar, LoginForm },
   methods: {
     goToCart() {
       this.$router.push("cart");

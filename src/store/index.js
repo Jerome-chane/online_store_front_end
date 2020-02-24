@@ -9,23 +9,28 @@ export default new Vuex.Store({
     products: [],
     user: null,
     showLoginForm: false,
+    showRegisterForm: false,
     logged: false,
     userAlreadyExist: false,
     cart: [],
     email: "",
-    pwd: ""
+    pwd: "",
+    sellerProducts: null
   },
   getters: {
+    sellerProducts: state => state.sellerProducts,
     products: state => state.products,
     cart: state => state.cart,
     logged: state => state.logged,
     user: state => state.user,
     showLoginForm: state => state.showLoginForm,
+    showRegisterForm: state => state.showRegisterForm,
     userAlreadyExist: state => state.userAlreadyExist,
     email: state => state.email,
     password: state => state.pwd
   },
   mutations: {
+    setSellerProducts: (state, payload) => (state.sellerProducts = payload),
     setProducts: (state, payload) => (state.products = payload),
     removeItem: (state, payload) => {
       state.cart.splice(payload, 1);
@@ -42,6 +47,7 @@ export default new Vuex.Store({
     syncEmail: (state, payload) => (state.email = payload),
     syncPwd: (state, payload) => (state.pwd = payload),
     setLoginForm: (state, payload) => (state.showLoginForm = payload),
+    setRegisterForm: (state, payload) => (state.showRegisterForm = payload),
     setUserAlreadyExist: (state, payload) => (state.userAlreadyExist = payload),
     setAuthorized: (state, payload) => (state.authorized = payload),
     syncLogged: (state, payload) => {
@@ -57,7 +63,8 @@ export default new Vuex.Store({
   actions: {
     signUp({ commit, dispatch }, payload) {
       let ourData = {
-        name: payload.name,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
         email: payload.email,
         password: payload.password,
         role: payload.role
@@ -83,16 +90,18 @@ export default new Vuex.Store({
             commit("syncEmail", ourData.email);
             commit("syncPwd", ourData.password);
             commit("setLoginForm", false);
+            commit("setRegisterForm", false);
             dispatch("login");
-            commit("setPerson", ourData); // TEMPORARY HERE. Set the Author in the Store when Author has signed up
           }
         })
         .catch(error => {
           console.log("Request failure: ", error);
         });
     },
+
     login({ getters, commit, dispatch }) {
       let ourData = { email: getters.email, pwd: getters.password };
+      console.log(ourData);
 
       fetch(`/api/login`, {
         credentials: "include",
@@ -104,6 +113,8 @@ export default new Vuex.Store({
       })
         .then(data => {
           if (data.status == 200) {
+            commit("setLoginForm", false);
+            commit("setRegisterForm", false);
             commit("syncLogged", true);
           }
           console.log("Log status", getters.logged);
@@ -138,6 +149,7 @@ export default new Vuex.Store({
           }
         })
         .then(() => {
+          commit("setUser", null);
           console.log("log Out successful");
         })
         .catch(error => console.log("Error ", error));
@@ -216,6 +228,19 @@ export default new Vuex.Store({
           });
       } else
         console.log("You must be logged in as seller to add a new product");
+    },
+    getSellerProducts({ commit }) {
+      fetch(`api/seller/products`, {
+        credentials: "include"
+      })
+        .then(data => {
+          return data.json();
+        })
+        .then(newData => {
+          console.log(newData);
+          commit("setSellerProducts", newData.products);
+        })
+        .catch(error => console.log(error));
     }
   },
   modules: {}
